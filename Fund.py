@@ -1,3 +1,4 @@
+# coding=utf-8
 from spider import get_records
 from datetime import date
 import pandas as pd
@@ -80,11 +81,11 @@ class Fund:
         fcst = m.predict(steps=step, freq="B")
 
         res_path = os.path.join(RES_PATH, "%s.csv" % file_name)
-        graph_path = os.path.join(GRAPH_PATH, "%s.svg" % file_name)
+        # graph_path = os.path.join(GRAPH_PATH, "%s.svg" % file_name)
         fcst.to_csv(res_path)
 
         fig = plot(his_data.head(250), fcst, include_history=True, title=file_name)
-        fig.savefig(graph_path, format='svg')
+        # fig.savefig(graph_path, format='svg')
 
         graph_path = os.path.join(GRAPH_PATH, "%s.png" % file_name)
         fig.savefig(graph_path, format='png')
