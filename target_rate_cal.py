@@ -2,13 +2,10 @@
 功能：确定定投的目标收益率
 """
 
-from Fund import Fund
-from datetime import date
-import numpy as np
-import pandas as pd
 import os
-from tqdm import tqdm
 
+import pandas as pd
+from tqdm import tqdm
 
 fund_info = {
     # "002979": "广发金融地产",
@@ -77,9 +74,7 @@ class FixedInvestor:
         sim_res = list()
         buy_days = list()
         for day, row in self.df.iterrows():
-            if day < start_day:
-                continue
-            if cost == 0 and day != row['buy_day']:  # 没有买入
+            if day < start_day and cost == 0 and day != row['buy_day']:  # 没有买入
                 continue
             unit_net = row['value']
             hold = share * unit_net
@@ -194,8 +189,12 @@ class FixedInvestor:
 
 
 def main():
+    """
     # fi = FixedInvestor("001595", "天弘中证银行", "2021-09-01", 100, "2W-WED", "left")
     # fi.target_rate_analysis(n=5)
+    :return:
+    :rtype:
+    """
     for k, v in fund_info.items():
         fi = FixedInvestor(k, v)
         fi.target_rate_analysis()

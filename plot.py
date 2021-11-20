@@ -1,7 +1,8 @@
-import pandas as pd
-import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 from kats.consts import TimeSeriesData
+
+from peaks import get_peaks
 
 
 def plot(
@@ -42,6 +43,10 @@ def plot(
 
     if include_history:
         ax.plot(fcst.time, fcst.fcst, ls="-", c="#4267B2")
+        peak_time, peak_val = get_peaks(fcst)
+        ax.plot(peak_time, peak_val, 'o')
+        for t, v in zip(peak_time, peak_val):
+            ax.text(t, v, str(t)[:10])
 
         if ("fcst_lower" in fcst.columns) and ("fcst_upper" in fcst.columns):
             ax.fill_between(

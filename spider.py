@@ -1,9 +1,10 @@
+import pandas as pd
 import requests
 from bs4 import BeautifulSoup
-from prettytable import *
-from from_soup_get_page import from_soup_get_page
-import pandas as pd
+from prettytable import PrettyTable
 from tqdm import tqdm
+
+from from_soup_get_page import from_soup_get_page
 
 
 def get_url(url, params=None, proxies=None):
@@ -34,7 +35,7 @@ def get_fund_data(code, start='', end='', page=1):
 
 def get_records(code, start, end):
     page_num, records = get_fund_data(code, start, end)
-    for curpage in tqdm(range(2, page_num+1)):
+    for curpage in tqdm(range(2, page_num + 1)):
         _, temp = get_fund_data(code, start, end, curpage)
         records.extend(temp)
     return records
@@ -60,4 +61,3 @@ def demo(code, start, end):
 if __name__ == "__main__":
     # print(demo('002979', '2001-06-22', '2021-08-31')) # jinrong
     print(demo('001549', '2001-06-22', '2021-08-31'))  # shangzheng50
-

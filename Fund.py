@@ -1,14 +1,14 @@
 # coding=utf-8
-from spider import get_records
-from datetime import date
-import pandas as pd
 import os
+from datetime import date
+
 import matplotlib.pyplot as plt
-from plot import plot
-
-from kats.models.prophet import ProphetModel, ProphetParams
+import pandas as pd
 from kats.consts import TimeSeriesData
+from kats.models.prophet import ProphetModel, ProphetParams
 
+from plot import plot
+from spider import get_records
 
 TODAY = str(date.today())
 DATA_PATH = os.path.join(os.getcwd(), "data")
@@ -64,9 +64,9 @@ class Fund:
         self.valid = self.predict(df, step=pred_step, valid_num=valid_num)
 
     def predict(self, his_data, step=65, valid_num=None):
-        file_name = self.file_name + "_fcst"   # 结果保存的文件名
+        file_name = self.file_name + "_fcst"  # 结果保存的文件名
         if valid_num:
-            file_name = file_name+"_valid"
+            file_name = file_name + "_valid"
             step += valid_num
             ts = TimeSeriesData(his_data[valid_num:])
         else:
@@ -81,7 +81,9 @@ class Fund:
         fcst = m.predict(steps=step, freq="B")
 
         res_path = os.path.join(RES_PATH, "%s.csv" % file_name)
+        """
         # graph_path = os.path.join(GRAPH_PATH, "%s.svg" % file_name)
+        """
         fcst.to_csv(res_path)
 
         fig = plot(his_data.head(250), fcst, include_history=True, title=file_name)

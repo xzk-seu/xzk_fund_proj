@@ -1,7 +1,6 @@
 # coding=utf-8
 from Fund import Fund
 
-
 fund_info = {
     "002979": "广发金融地产",
     "001549": "天弘上证50",
@@ -15,7 +14,6 @@ fund_info = {
     "002903": "广发中证500",
     "002987": "广发沪深300"
 }
-
 
 if __name__ == '__main__':
     for k, v in fund_info.items():

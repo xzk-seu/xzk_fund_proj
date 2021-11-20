@@ -1,9 +1,9 @@
-from bs4 import BeautifulSoup
 import json
+
+from bs4 import BeautifulSoup
 
 
 def from_soup_get_page(soup):
-
     s = soup.contents[-1].replace("\",", "{").replace(";", "").replace("records", "\"records\"") \
         .replace("pages", "\"pages\"").replace("curpage", "\"curpage\"").strip()
     s = json.loads(s)["pages"]
