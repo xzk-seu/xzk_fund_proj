@@ -60,4 +60,4 @@ def demo(code, start, end):
 
 if __name__ == "__main__":
     # print(demo('002979', '2001-06-22', '2021-08-31')) # jinrong
-    print(demo('001549', '2001-06-22', '2021-08-31'))  # shangzheng50
+    print(demo('001549', '2022-03-03', '2022-03-03'))  # shangzheng50
