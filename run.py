@@ -17,7 +17,7 @@ fund_info = {
 
 if __name__ == '__main__':
     for k, v in fund_info.items():
-        print(k, v, "\n\n\n")
+        print("\n", k, v)
         fund = Fund(k, v, result_dir="持有")
         fund.forecasting(step=90)
         fund.validate()

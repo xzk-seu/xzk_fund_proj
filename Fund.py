@@ -6,53 +6,65 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from kats.consts import TimeSeriesData
 from kats.models.prophet import ProphetModel, ProphetParams
+from database_util import FundInfoTable
 
 from plot import plot
 from spider import get_records
 TODAY = str(date.today())
 
 
-def reset_path(result_dir):
-    data_path = os.path.join(os.getcwd(), result_dir, TODAY, "data")
-    res_path = os.path.join(os.getcwd(), result_dir, TODAY, "result")
-    graph_path = os.path.join(os.getcwd(), result_dir, TODAY, "graph")
-    path_list = [data_path, res_path, graph_path]
-    for p in path_list:
-        if not os.path.exists(p):
-            os.makedirs(p)
-    return data_path, res_path, graph_path
-
-
 class Fund:
     def __init__(self, code="0", description="", timestamp=TODAY,
                  result_dir=None):
-        self.data_path, self.res_path, self.graph_path = reset_path(result_dir)
+        self.timestamp = timestamp
+        self.data_path, self.res_path, self.graph_path = self.reset_path(result_dir)
         self.code = code
         self.description = description
         self.records = None
         self.df = pd.DataFrame()
-        self.timestamp = timestamp
         self.file_name = "%s_%s_%s" % (self.code, self.description, self.timestamp)
         self.fcst = None
         self.valid = None
-        if self.df.empty:
-            self.get_fund_data()
+        self.init_data_from_sql()
+
+    def reset_path(self, result_dir):
+        data_path = os.path.join(os.getcwd(), result_dir, self.timestamp, "data")
+        res_path = os.path.join(os.getcwd(), result_dir, self.timestamp, "result")
+        graph_path = os.path.join(os.getcwd(), result_dir, self.timestamp, "graph")
+        path_list = [data_path, res_path, graph_path]
+        for p in path_list:
+            if not os.path.exists(p):
+                os.makedirs(p)
+        return data_path, res_path, graph_path
+
+    def init_data_from_sql(self):
+        fund_info_table = FundInfoTable(self.code)
+        self.df = fund_info_table.get_data_from_sql()
 
     def get_fund_data(self, begin="2001-01-01", end=TODAY):
+        """
+        从csv中加载数据，没有的话进行爬取，已废弃，用mysql
+        :param begin:
+        :type begin:
+        :param end:
+        :type end:
+        :return:
+        :rtype:
+        """
         data_path = os.path.join(self.data_path, "%s.csv" % self.file_name)
         if os.path.exists(data_path):
             print("%s \n is already existed!" % data_path)
-            self.df = pd.read_csv(data_path)
+            self.df = pd.read_csv(data_path,
+                                  dtype={"Code": object})
             return self.df
         self.records = get_records(self.code, begin, end)
         self.df = pd.DataFrame(self.records)
-        self.df.to_csv(data_path)
-        self.df = pd.read_csv(data_path)
+        self.df.to_csv(data_path, index=False)
+        self.df = pd.read_csv(data_path,
+                              dtype={"Code": object})
         return self.df
 
     def forecasting(self, step=65):
-        if self.df.empty:
-            self.get_fund_data()
         df = self.df[["Date", "NetAssetValue"]]
         df.columns = ["time", "value"]
         self.fcst = self.predict(df, step=step)
@@ -64,8 +76,6 @@ class Fund:
         :param valid_num: 用来验证的数据条数
         :return:
         """
-        if self.df.empty:
-            self.get_fund_data()
         df = self.df[["Date", "NetAssetValue"]]
         df.columns = ["time", "value"]
         self.valid = self.predict(df, step=pred_step, valid_num=valid_num)
@@ -91,7 +101,7 @@ class Fund:
         """
         # graph_path = os.path.join(GRAPH_PATH, "%s.svg" % file_name)
         """
-        fcst.to_csv(res_path)
+        fcst.to_csv(res_path, index=False)
 
         fig = plot(his_data.head(250), fcst, include_history=True, title=file_name)
         # fig.savefig(graph_path, format='svg')
@@ -139,12 +149,12 @@ class Fund:
 
         fig.tight_layout()
         plt.show()
+        print("结论：", flag)
 
 
 if __name__ == '__main__':
     fund = Fund("001549", "上证50", result_dir="持有")
-    d = fund.get_fund_data()
-    print(d.head())
+    print(fund.df.head())
     fund.boll()
     fund.forecasting()
     fund.validate()

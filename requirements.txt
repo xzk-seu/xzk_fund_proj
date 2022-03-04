@@ -8,3 +8,4 @@ requests==2.26.0
 tqdm==4.62.3
 
 scipy~=1.7.2
+sqlalchemy~=1.4.31
