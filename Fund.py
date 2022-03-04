@@ -41,29 +41,6 @@ class Fund:
         fund_info_table = FundInfoTable(self.code)
         self.df = fund_info_table.get_data_from_sql()
 
-    def get_fund_data(self, begin="2001-01-01", end=TODAY):
-        """
-        从csv中加载数据，没有的话进行爬取，已废弃，用mysql
-        :param begin:
-        :type begin:
-        :param end:
-        :type end:
-        :return:
-        :rtype:
-        """
-        data_path = os.path.join(self.data_path, "%s.csv" % self.file_name)
-        if os.path.exists(data_path):
-            print("%s \n is already existed!" % data_path)
-            self.df = pd.read_csv(data_path,
-                                  dtype={"Code": object})
-            return self.df
-        self.records = get_records(self.code, begin, end)
-        self.df = pd.DataFrame(self.records)
-        self.df.to_csv(data_path, index=False)
-        self.df = pd.read_csv(data_path,
-                              dtype={"Code": object})
-        return self.df
-
     def forecasting(self, step=65):
         df = self.df[["Date", "NetAssetValue"]]
         df.columns = ["time", "value"]
