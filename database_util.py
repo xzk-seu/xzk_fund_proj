@@ -1,3 +1,4 @@
+import datetime
 from datetime import date
 from urllib.parse import quote_plus as urlquote
 
@@ -56,7 +57,7 @@ class FundInfoTable:
         """
         if not inspect(engine).has_table(self.table_name) or self.get_nearest_date() != date.today():
             nearest_date = self.get_nearest_date()
-            start = nearest_date if nearest_date else "2001-01-01"
+            start = str(nearest_date+datetime.timedelta(1)) if nearest_date else "2001-01-01"
             records = get_records(self.code, start=start, end=str(date.today()))
             df = pd.DataFrame(records)
             df.to_sql(self.table_name, engine, if_exists="append", index=False, dtype=self.dtype)
