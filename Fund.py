@@ -17,7 +17,7 @@ class Fund:
     def __init__(self, code="0", description="", timestamp=TODAY,
                  result_dir=None):
         self.timestamp = timestamp
-        self.data_path, self.res_path, self.graph_path = self.reset_path(result_dir)
+        self.boll_path, self.res_path, self.graph_path = self.reset_path(result_dir)
         self.code = code
         self.description = description
         self.records = None
@@ -28,14 +28,14 @@ class Fund:
         self.init_data_from_sql()
 
     def reset_path(self, result_dir):
-        data_path = os.path.join(os.getcwd(), result_dir, self.timestamp, "data")
+        boll_path = os.path.join(os.getcwd(), "boll")
         res_path = os.path.join(os.getcwd(), result_dir, self.timestamp, "result")
         graph_path = os.path.join(os.getcwd(), result_dir, self.timestamp, "graph")
-        path_list = [data_path, res_path, graph_path]
+        path_list = [boll_path, res_path, graph_path]
         for p in path_list:
             if not os.path.exists(p):
                 os.makedirs(p)
-        return data_path, res_path, graph_path
+        return boll_path, res_path, graph_path
 
     def init_data_from_sql(self):
         fund_info_table = FundInfoTable(self.code)
@@ -125,6 +125,11 @@ class Fund:
         ax.text(res["time"], res["value"], flag, size=24)
 
         fig.tight_layout()
+
+        file_name = self.file_name + "_boll"  # 结果保存的文件名
+        graph_path = os.path.join(self.boll_path, "%s.png" % file_name)
+        fig.savefig(graph_path, format='png')
+
         plt.show()
         print("结论：", flag)
 
