@@ -1,5 +1,6 @@
 # coding=utf-8
 from Fund import Fund
+import pandas as pd
 
 fund_info = {
     "519002": "华安安信消费服务混合",
@@ -17,7 +18,19 @@ fund_info = {
 
 
 if __name__ == '__main__':
+    res = {"code": list(),
+           "name": list(),
+           "time": list(),
+           "flag": list(),
+           "threshold": list()}
     for k, v in fund_info.items():
         print("\n", k, v)
         fund = Fund(k, v, result_dir="短期观望")
-        fund.boll()
+        flag, threshold = fund.boll()
+        res["code"].append(k)
+        res["name"].append(v)
+        res["time"].append(fund.timestamp)
+        res["flag"].append(flag)
+        res["threshold"].append(threshold)
+        df = pd.DataFrame(res)
+        df.to_csv("boll_短期.csv", index=False)

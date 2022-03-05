@@ -115,23 +115,43 @@ class Fund:
         ax.grid(True, which="major", c="gray", ls="-", lw=1, alpha=0.2)
         ax.set_xlabel(xlabel="time")
 
-        flag = "None"
-        res = data.iloc[0]
-        if res["value"] > res["high"]:
-            flag = "high"
-        elif res["value"] < res["low"]:
-            flag = "low"
+        def _get_flag(last_data):
+            f = "None"
+            value = last_data["value"]
+            high = last_data["high"]
+            low = last_data["low"]
+            up_bond = (high - value) / value
+            low_bond = (value - low) / value
+            threshold = 0.01
+            r = 0
+            if value > high:
+                f = "high"
+                r = up_bond * 100
+            elif value < low:
+                f = "low"
+                r = low_bond * 100
+            elif up_bond < threshold:
+                f = "注意卖出"
+                r = up_bond * 100
+            elif low_bond < threshold:
+                f = "注意买入"
+                r = low_bond * 100
+            return f, r
 
-        ax.text(res["time"], res["value"], flag, size=24)
+        last_row = data.iloc[0]
+        flag, res = _get_flag(last_row)
+        conclusion = "%s\n%.2f" % (flag, res)
+        ax.text(last_row["time"], last_row["value"], conclusion, size=24)
 
         fig.tight_layout()
 
-        file_name = self.file_name + "_boll"  # 结果保存的文件名
+        file_name = "%s_%s_boll" % (self.code, self.description)  # 结果保存的文件名
         graph_path = os.path.join(self.boll_path, "%s.png" % file_name)
         fig.savefig(graph_path, format='png')
 
         plt.show()
-        print("结论：", flag)
+        print("结论：", conclusion)
+        return flag, res
 
 
 if __name__ == '__main__':
