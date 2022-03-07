@@ -1,7 +1,7 @@
 # coding=utf-8
 import os
 from datetime import date
-from pandas.api.indexers import FixedForwardWindowIndexer
+from BollingerBand import BollingerBand
 import matplotlib.pyplot as plt
 import pandas as pd
 from kats.consts import TimeSeriesData
@@ -24,6 +24,8 @@ class Fund:
         self.file_name = "%s_%s_%s" % (self.code, self.description, self.timestamp)
         self.fcst = None
         self.valid = None
+        self.fund_info_table = None
+        self.boll_band = None
         self.init_data_from_sql()
 
     def reset_path(self, result_dir):
@@ -37,8 +39,8 @@ class Fund:
         return boll_path, res_path, graph_path
 
     def init_data_from_sql(self):
-        fund_info_table = FundInfoTable(self.code)
-        self.df = fund_info_table.get_data_from_sql()
+        self.fund_info_table = FundInfoTable(self.code)
+        self.df = self.fund_info_table.get_data_from_sql()
 
     def forecasting(self, step=65):
         df = self.df[["Date", "NetAssetValue"]]
@@ -92,65 +94,16 @@ class Fund:
         data = self.df[["Date", "NetAssetValue"]]
         data.columns = ["time", "value"]
         data = data.head(100)
-        roll = data["value"].rolling(FixedForwardWindowIndexer(window_size=window))
-        std = roll.std()
-        mean = roll.mean()
-        data["std"] = std
-        data["mean"] = mean
-        data["high"] = mean + 2 * std
-        data["low"] = mean - 2 * std
-        plt.rcParams['font.sans-serif'] = ['SimHei']
-        plt.rcParams['axes.unicode_minus'] = False
-        fig = plt.figure(facecolor="w", figsize=(10, 6))
-        # plt.title(title)
-        title = self.file_name
-        fig.suptitle(title)
-        ax = fig.add_subplot(111)
-        ax.plot(pd.to_datetime(data.time), data.value, "k")
-        ax.plot(pd.to_datetime(data.time), data['mean'], )
-        ax.plot(pd.to_datetime(data.time), data["high"], )
-        ax.plot(pd.to_datetime(data.time), data["low"], )
 
-        ax.grid(True, which="major", c="gray", ls="-", lw=1, alpha=0.2)
-        ax.set_xlabel(xlabel="time")
-
-        def _get_flag(last_data):
-            f = "None"
-            value = last_data["value"]
-            high = last_data["high"]
-            low = last_data["low"]
-            up_bond = (high - value) / value
-            low_bond = (value - low) / value
-            threshold = 0.01
-            r = 0
-            if value > high:
-                f = "high"
-                r = up_bond * 100
-            elif value < low:
-                f = "low"
-                r = low_bond * 100
-            elif up_bond < threshold:
-                f = "注意卖出"
-                r = up_bond * 100
-            elif low_bond < threshold:
-                f = "注意买入"
-                r = low_bond * 100
-            return f, r
-
-        last_row = data.iloc[0]
-        flag, res = _get_flag(last_row)
-        conclusion = "%s\n%.2f" % (flag, res)
-        ax.text(last_row["time"], last_row["value"], conclusion, size=24)
-
-        fig.tight_layout()
+        self.boll_band = BollingerBand(data)
+        fig = self.boll_band.get_fig(self.file_name)
 
         file_name = "%s_%s_boll" % (self.code, self.description)  # 结果保存的文件名
         graph_path = os.path.join(self.boll_path, "%s.png" % file_name)
         fig.savefig(graph_path, format='png')
 
         plt.show()
-        print("结论：", conclusion)
-        return flag, res
+        print("结论：", self.boll_band.conclusion)
 
 
 if __name__ == '__main__':

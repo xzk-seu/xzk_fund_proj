@@ -34,6 +34,11 @@ class FundInfoTable:
                                   Column('NetAssetValue', sqlalchemy.types.Float),
                                   Column('ChangePercent', sqlalchemy.types.Text),
                                   )
+        if not inspect(engine).has_table(self.table_name):
+            records = get_records(self.code, start="2001-01-01", end=str(date.today()))
+            df = pd.DataFrame(records)
+            df.to_sql(self.table_name, engine, if_exists="replace", index=False, dtype=self.dtype)
+        self.nearest_date = self.get_nearest_date()
 
     def get_nearest_date(self):
         """
@@ -41,8 +46,6 @@ class FundInfoTable:
         :return:
         :rtype:
         """
-        if not inspect(engine).has_table(self.table_name):
-            return
         stmt = select(func.max(self.table_schema.columns.Date))
         df = pd.read_sql(stmt, engine)
         max_date = df.iloc[0]
@@ -55,9 +58,8 @@ class FundInfoTable:
         :return:
         :rtype:
         """
-        if not inspect(engine).has_table(self.table_name) or self.get_nearest_date() != date.today():
-            nearest_date = self.get_nearest_date()
-            start = str(nearest_date+datetime.timedelta(1)) if nearest_date else "2001-01-01"
+        if self.nearest_date != date.today():
+            start = str(self.nearest_date+datetime.timedelta(1))
             records = get_records(self.code, start=start, end=str(date.today()))
             df = pd.DataFrame(records)
             if df.shape[1] > 1:  # 当前日期为空时会插入只有code列的空值
