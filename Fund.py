@@ -9,7 +9,6 @@ from kats.models.prophet import ProphetModel, ProphetParams
 from database_util import FundInfoTable
 
 from plot import plot
-from spider import get_records
 TODAY = str(date.today())
 
 
