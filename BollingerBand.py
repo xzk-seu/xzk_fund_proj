@@ -25,7 +25,7 @@ class BollingerBand:
         plt.rcParams['font.sans-serif'] = ['SimHei']
         plt.rcParams['axes.unicode_minus'] = False
         fig = plt.figure(facecolor="w", figsize=(10, 6))
-        
+
         fig.suptitle(title)
         ax = fig.add_subplot(111)
         ax.plot(pd.to_datetime(self.data.time), self.data.value, "k")
