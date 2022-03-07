@@ -47,7 +47,7 @@ class BollingerBand:
         low = self.last_row["low"]
         self.upper_bound = (high - value) / value * 100
         self.lower_bound = (value - low) / value * 100
-        threshold = 0.01
+        threshold = 1
 
         if value > high:
             self.conclusion = "突破上界"
