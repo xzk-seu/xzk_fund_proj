@@ -59,7 +59,7 @@ def init_from_scratch(table_name):
         'code': sqlalchemy.types.String(length=10),
         'name': sqlalchemy.types.Text,
         'state': sqlalchemy.types.String(length=10),
-        'topic': sqlalchemy.types.String(length=10),
+        'topic': sqlalchemy.types.Text,
     })
 
 
@@ -75,7 +75,7 @@ def sort_fund_io(table_name):
         'code': sqlalchemy.types.String(length=10),
         'name': sqlalchemy.types.Text,
         'state': sqlalchemy.types.String(length=10),
-        'topic': sqlalchemy.types.String(length=10),
+        'topic': sqlalchemy.types.Text,
     })
     return df
 
