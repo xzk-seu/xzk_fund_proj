@@ -10,9 +10,10 @@ if __name__ == '__main__':
            "flag": list(),
            "upper_bound": list(),
            "lower_bound": list(),
-           "state": list()}
+           "state": list(),
+           "topic": list()}
     df = pd.read_sql("code_name_map", engine)
-    for _, k, v, state in df.itertuples():
+    for _, k, v, state, topic in df.itertuples():
         print("\n", k, v)
         fund = Fund(k, v, result_dir=state)
         fund.boll()
@@ -23,6 +24,7 @@ if __name__ == '__main__':
         res["upper_bound"].append(fund.boll_band.upper_bound)
         res["lower_bound"].append(fund.boll_band.lower_bound)
         res["state"].append(state)
+        res["topic"].append(topic)
     df = pd.DataFrame(res)
     df.sort_values(by=["state", "flag"], ascending=[True, False], inplace=True)
     df.to_csv("boll_res.csv", index=False)
