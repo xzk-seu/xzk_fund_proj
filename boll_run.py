@@ -15,7 +15,7 @@ if __name__ == '__main__':
     df = pd.read_sql("code_name_map", engine)
     for _, k, v, state, topic in df.itertuples():
         print("\n", k, v)
-        fund = Fund(k, v, result_dir=state)
+        fund = Fund(k, v, result_dir=state, only_boll=True)
         fund.boll()
         res["code"].append(k)
         res["name"].append(v)

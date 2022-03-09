@@ -14,7 +14,8 @@ TODAY = str(date.today())
 
 class Fund:
     def __init__(self, code="0", description="", timestamp=TODAY,
-                 result_dir=None):
+                 result_dir=None, only_boll=False):
+        self.only_boll = only_boll
         self.timestamp = timestamp
         self.boll_path, self.res_path, self.graph_path = self.reset_path(result_dir)
         self.code = code
@@ -32,7 +33,9 @@ class Fund:
         boll_path = os.path.join(os.getcwd(), "boll")
         res_path = os.path.join(os.getcwd(), result_dir, self.timestamp, "result")
         graph_path = os.path.join(os.getcwd(), result_dir, self.timestamp, "graph")
-        path_list = [boll_path, res_path, graph_path]
+        path_list = [boll_path]
+        if not self.only_boll:
+            path_list.extend([res_path, graph_path])
         for p in path_list:
             if not os.path.exists(p):
                 os.makedirs(p)
@@ -90,7 +93,7 @@ class Fund:
         plt.show()
         return fcst
 
-    def boll(self, window=20):
+    def boll(self):
         data = self.df[["Date", "NetAssetValue"]]
         data.columns = ["time", "value"]
         data = data.head(100)
@@ -102,7 +105,8 @@ class Fund:
         graph_path = os.path.join(self.boll_path, "%s.png" % file_name)
         fig.savefig(graph_path, format='png')
 
-        plt.show()
+        # plt.show()
+        plt.close()
         print("结论：", self.boll_band.conclusion)
 
 
