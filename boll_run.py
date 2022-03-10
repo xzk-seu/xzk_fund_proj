@@ -16,6 +16,7 @@ if __name__ == '__main__':
     for _, k, v, state, topic in df.itertuples():
         print("\n", k, v)
         fund = Fund(k, v, result_dir=state, only_boll=True)
+        print(fund.fund_info_table.nearest_date)
         fund.boll()
         res["code"].append(k)
         res["name"].append(v)
