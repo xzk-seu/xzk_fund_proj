@@ -64,6 +64,7 @@ class FundInfoTable:
             df = pd.DataFrame(records)
             if df.shape[1] > 1:  # 当前日期为空时会插入只有code列的空值
                 df.to_sql(self.table_name, engine, if_exists="append", index=False, dtype=self.dtype)
+                self.nearest_date = self.get_nearest_date()
         stmt = select(self.table_schema).order_by(self.table_schema.c.Date.desc())
         data = pd.read_sql(stmt, engine)
         return data
