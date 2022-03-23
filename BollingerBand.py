@@ -20,6 +20,7 @@ class BollingerBand:
         self.conclusion = "None"
         self.upper_bound, self.lower_bound = 0, 0
         self.init_last_state()
+        self.width = self.upper_bound + self.lower_bound
 
     def get_fig(self, title):
         plt.rcParams['font.sans-serif'] = ['SimHei']

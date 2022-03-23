@@ -7,9 +7,10 @@ if __name__ == '__main__':
     res = {"code": list(),
            "name": list(),
            "time": list(),
-           "flag": list(),
            "upper_bound": list(),
            "lower_bound": list(),
+           "width": list(),
+           "flag": list(),
            "state": list(),
            "topic": list()}
     df = pd.read_sql("code_name_map", engine)
@@ -24,6 +25,7 @@ if __name__ == '__main__':
         res["flag"].append(fund.boll_band.conclusion)
         res["upper_bound"].append(fund.boll_band.upper_bound)
         res["lower_bound"].append(fund.boll_band.lower_bound)
+        res["width"].append(fund.boll_band.width)
         res["state"].append(state)
         res["topic"].append(topic)
     df = pd.DataFrame(res)
