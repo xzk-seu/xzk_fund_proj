@@ -22,6 +22,10 @@ class BollingerBand:
         self.init_last_state()
         self.width = self.upper_bound + self.lower_bound
 
+        self.max_tol = 0
+        self.min_tol = 0
+        self.init_tolerance()
+
     def get_fig(self, title):
         plt.rcParams['font.sans-serif'] = ['SimHei']
         plt.rcParams['axes.unicode_minus'] = False
@@ -58,3 +62,26 @@ class BollingerBand:
             self.conclusion = "注意卖出"
         elif self.lower_bound < threshold:
             self.conclusion = "注意买入"
+
+    def init_tolerance(self):
+        d = self.data.iloc[0: 19, 1]
+
+        def gain_rate_test(gain_rate):  # 模拟每一个涨幅
+            x = self.last_row["value"] * (1 + gain_rate / 100)
+            d.update(pd.Series([x], index=[19]))
+            std = d.std()
+            mean = d.mean()
+            a = mean + 2 * std
+            b = mean - 2 * std
+            if b < x < a:
+                return False  # 如果明日价格浮动到通道内，则不能接受
+            return True
+
+        gains = list()
+        for i in range(-500, 500):
+            g = i/100
+            if gain_rate_test(g):
+                gains.append(g)
+        if gains:
+            self.max_tol = max(gains)
+            self.min_tol = min(gains)

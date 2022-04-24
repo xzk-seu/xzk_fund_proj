@@ -10,6 +10,8 @@ if __name__ == '__main__':
            "upper_bound": list(),
            "lower_bound": list(),
            "width": list(),
+           "max_tol": list(),
+           "min_tol": list(),
            "flag": list(),
            "state": list(),
            "topic": list()}
@@ -26,6 +28,8 @@ if __name__ == '__main__':
         res["upper_bound"].append(fund.boll_band.upper_bound)
         res["lower_bound"].append(fund.boll_band.lower_bound)
         res["width"].append(fund.boll_band.width)
+        res["max_tol"].append(fund.boll_band.max_tol)
+        res["min_tol"].append(fund.boll_band.min_tol)
         res["state"].append(state)
         res["topic"].append(topic)
     df = pd.DataFrame(res)
