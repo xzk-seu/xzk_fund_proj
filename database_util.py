@@ -24,8 +24,8 @@ def get_newest_value_date():
     :rtype:
     """
 
-    def is_trade_day(d):
-        if is_workday(d) and n_time.isoweekday() < 6:
+    def is_trade_day(test_day):
+        if is_workday(test_day) and test_day.isoweekday() < 6:
             return True
         return False
 
