@@ -65,6 +65,7 @@ class BollingerBand:
 
     def init_tolerance(self):
         d = self.data.iloc[0: 19, 1]
+        d[19] = 0
 
         def gain_rate_test(gain_rate):  # 模拟每一个涨幅
             x = self.last_row["value"] * (1 + gain_rate / 100)
