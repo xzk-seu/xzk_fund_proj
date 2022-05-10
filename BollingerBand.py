@@ -75,10 +75,10 @@ class BollingerBand:
             a = mean + 2 * std
             b = mean - 2 * std
             if b < x < a:
-                return False  # 如果明日价格浮动到通道内，则不能接受
-            return True
+                return True  # 如果明日价格浮动到通道内，则不会影响通道状态
+            return False
 
-        gains = list()
+        gains = list()  # 此收益率不会影响通道状态
         for i in range(-500, 500):
             g = i/100
             if gain_rate_test(g):
